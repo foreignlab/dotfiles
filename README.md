@@ -30,14 +30,19 @@ git clone https://github.com/foreignlab/dotfiles.git
 cd dotfiles
 ```
 
-### 2. Run the Installer
+### 2. Install Zap Plugin Manager (Required)
+```bash
+curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh | zsh
+```
+
+### 3. Run the Installer
 ```bash
 ./install.sh
 ```
 
-The installer creates symlinks from the organized directory structure to your home directory.
+The installer checks for required dependencies and creates symlinks from the organized directory structure to your home directory.
 
-### 3. Restart Your Shell
+### 4. Restart Your Shell
 ```bash
 exec zsh
 # or open a new terminal session

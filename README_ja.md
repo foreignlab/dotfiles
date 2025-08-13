@@ -30,14 +30,19 @@ git clone https://github.com/foreignlab/dotfiles.git
 cd dotfiles
 ```
 
-### 2. インストーラーを実行
+### 2. Zapプラグインマネージャーをインストール（必須）
+```bash
+curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh | zsh
+```
+
+### 3. インストーラーを実行
 ```bash
 ./install.sh
 ```
 
-インストーラーは、整理されたディレクトリ構造からホームディレクトリにシンボリックリンクを作成します。
+インストーラーは必要な依存関係をチェックし、整理されたディレクトリ構造からホームディレクトリにシンボリックリンクを作成します。
 
-### 3. シェルを再起動
+### 4. シェルを再起動
 ```bash
 exec zsh
 # または新しいターミナルセッションを開く

@@ -7,6 +7,19 @@ DOTFILES_DIR="$PWD"
 
 echo "Installing dotfiles..."
 
+# Check for Zap plugin manager
+if [ ! -f "$HOME/.local/share/zap/zap.zsh" ]; then
+  echo ""
+  echo "⚠️  Warning: Zap plugin manager not found."
+  echo "Zsh configuration requires Zap to function properly."
+  echo ""
+  echo "Please install Zap first:"
+  echo "  curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh | zsh"
+  echo ""
+  echo "Then run this installer again."
+  exit 1
+fi
+
 # Zsh configuration
 ln -sf "$DOTFILES_DIR/zsh/.zshrc" "$HOME/.zshrc"
 ln -sf "$DOTFILES_DIR/zsh/.zprofile" "$HOME/.zprofile"
