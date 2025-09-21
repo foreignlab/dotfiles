@@ -82,8 +82,8 @@ alias lat='eza -la --octal-permissions --sort newest -r'
 alias latr='eza -la --octal-permissions --sort newest'
 alias cat='bat --style=plain'
 alias diff='delta'
-#alias vim='nvim'
-#alias vi='nvim'
+alias vim='nvim'
+alias vi='nvim'
 
 ###
 ### PATH
