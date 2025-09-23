@@ -9,24 +9,16 @@ import sys
 import os
 import logging
 import re
+import subprocess
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 
+# 共通設定とユーティリティをインポート
+from config import CIPHER_CONFIG, MESSAGE_CONFIG, PROJECT_CONFIG, LANGUAGE_PATTERNS, TASK_PATTERNS, PRIORITY_PATTERNS, STATUS_PATTERNS
+from utils import setup_logging, extract_project_context, truncate_for_log, get_current_timestamp
+
 # ログ設定
-log_dir = os.path.join(os.path.dirname(__file__), 'logs')
-os.makedirs(log_dir, exist_ok=True)
-log_file = os.path.join(log_dir, 'cipher_hook.log')
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='[%(asctime)s] %(levelname)s: %(message)s',
-    handlers=[
-        logging.FileHandler(log_file, encoding='utf-8'),
-        logging.StreamHandler(sys.stderr)
-    ]
-)
-
-logger = logging.getLogger(__name__)
+logger = setup_logging('SAVE')
 
 def read_stdin_json() -> Optional[Dict[str, Any]]:
     """標準入力からJSONを読み取る"""
@@ -67,7 +59,7 @@ def read_transcript(transcript_path: str) -> Optional[List[Dict[str, Any]]]:
         logger.error(f"Error reading transcript: {e}")
         return None
 
-def extract_conversation_content(messages: List[Dict[str, Any]], limit: int = 20) -> str:
+def extract_conversation_content(messages: List[Dict[str, Any]], limit: int = MESSAGE_CONFIG['default_limit']) -> str:
     """会話内容から重要な部分を抽出"""
     try:
         # 最新のメッセージから指定数を取得
@@ -76,63 +68,49 @@ def extract_conversation_content(messages: List[Dict[str, Any]], limit: int = 20
         conversation_parts = []
         for msg in recent_messages:
             msg_type = msg.get('type', '')
-            content = msg.get('content', '')
+            message_data = msg.get('message', {})
 
-            if msg_type == 'text' and content:
-                # ユーザーまたはアシスタントのテキストメッセージ
-                role = msg.get('role', 'unknown')
-                conversation_parts.append(f"[{role}]: {content}")
-            elif msg_type == 'tool_use':
-                # ツール使用の記録
-                tool_name = msg.get('name', 'unknown_tool')
-                conversation_parts.append(f"[tool]: {tool_name}")
+            # userまたはassistantメッセージの処理
+            if msg_type in ['user', 'assistant'] and message_data:
+                role = message_data.get('role', msg_type)
+                content = message_data.get('content', '')
+
+                # contentが文字列の場合
+                if isinstance(content, str) and content.strip():
+                    conversation_parts.append(f"[{role}]: {content}")
+                # contentが配列の場合（tool_useなど）
+                elif isinstance(content, list):
+                    for item in content:
+                        if isinstance(item, dict):
+                            if item.get('type') == 'text':
+                                text = item.get('text', '')
+                                if text.strip():
+                                    conversation_parts.append(f"[{role}]: {text}")
+                            elif item.get('type') == 'tool_use':
+                                tool_name = item.get('name', 'unknown_tool')
+                                conversation_parts.append(f"[{role}-tool]: {tool_name}")
+
+        logger.info(f"Extracted {len(conversation_parts)} conversation parts from {len(recent_messages)} messages")
+
+        # デバッグ：コンテンツが抽出されなかった場合
+        if not conversation_parts and recent_messages:
+            logger.warning(f"No conversation parts extracted from {len(recent_messages)} messages")
+            sample_msg = recent_messages[0]
+            logger.debug(f"Sample message structure: {list(sample_msg.keys())}")
 
         return "\n".join(conversation_parts)
     except Exception as e:
         logger.error(f"Error extracting conversation content: {e}")
         return ""
 
-def extract_project_context(transcript_path: str) -> Dict[str, Any]:
-    """トランスクリプトパスからプロジェクトコンテキストを抽出"""
-    try:
-        # パスからプロジェクト名を推測
-        path_parts = transcript_path.split('/')
-        project_name = "unknown"
-        working_dir = "unknown"
-
-        # プロジェクトディレクトリを探す
-        for i, part in enumerate(path_parts):
-            if part in ['Documents', 'Projects', 'workspace', 'code']:
-                if i + 1 < len(path_parts):
-                    project_name = path_parts[i + 1]
-                    working_dir = '/'.join(path_parts[:i + 2])
-                break
-
-        return {
-            "name": project_name,
-            "path": working_dir,
-            "transcript_path": transcript_path
-        }
-    except Exception as e:
-        logger.error(f"Error extracting project context: {e}")
-        return {"name": "unknown", "path": "unknown", "transcript_path": transcript_path}
+# extract_project_context は shared_utils から使用
 
 def detect_languages(content: str) -> List[str]:
     """会話内容からプログラミング言語を検出"""
     languages = []
 
-    # 一般的な言語パターン
-    language_patterns = {
-        'python': [r'\.py\b', r'python', r'pip\s+install', r'def\s+\w+', r'import\s+\w+'],
-        'javascript': [r'\.js\b', r'\.ts\b', r'npm\s+install', r'function\s+\w+', r'const\s+\w+'],
-        'java': [r'\.java\b', r'public\s+class', r'package\s+\w+', r'import\s+java'],
-        'go': [r'\.go\b', r'func\s+\w+', r'package\s+main', r'import\s+"'],
-        'rust': [r'\.rs\b', r'fn\s+\w+', r'use\s+std::', r'cargo\s+'],
-        'shell': [r'\.sh\b', r'#!/bin/bash', r'chmod\s+\+x', r'\$\{.*\}'],
-        'json': [r'\.json\b', r'\{.*".*":', r'JSON'],
-        'yaml': [r'\.ya?ml\b', r'---\s*$', r'^\s*\w+:\s*$'],
-        'markdown': [r'\.md\b', r'##?\s+', r'\[.*\]\(.*\)']
-    }
+    # 言語パターンを設定から使用
+    language_patterns = LANGUAGE_PATTERNS
 
     for lang, patterns in language_patterns.items():
         if any(re.search(pattern, content, re.IGNORECASE | re.MULTILINE) for pattern in patterns):
@@ -144,16 +122,10 @@ def detect_project_status(content: str) -> str:
     """プロジェクトの状況を検出"""
     content_lower = content.lower()
 
-    if any(word in content_lower for word in ['完了', 'completed', 'finished', 'done']):
-        return 'completed'
-    elif any(word in content_lower for word in ['進行中', 'in progress', 'working on']):
-        return 'in-progress'
-    elif any(word in content_lower for word in ['開始', 'started', 'beginning']):
-        return 'started'
-    elif any(word in content_lower for word in ['計画', 'planning', 'design']):
-        return 'planning'
-    else:
-        return 'active'
+    for status, patterns in STATUS_PATTERNS.items():
+        if patterns and any(word in content_lower for word in patterns):
+            return status
+    return 'active'
 
 def generate_smart_tags(conversation_content: str, project_context: Dict[str, Any]) -> List[str]:
     """会話内容から智能的にタグを生成"""
@@ -170,23 +142,19 @@ def generate_smart_tags(conversation_content: str, project_context: Dict[str, An
 
     # タスクタイプ検出
     content_lower = conversation_content.lower()
-    if any(word in content_lower for word in ["implement", "実装", "作成", "build"]):
-        tags.append("task:implementation")
-    elif any(word in content_lower for word in ["debug", "デバッグ", "修正", "fix", "error"]):
-        tags.append("task:debugging")
-    elif any(word in content_lower for word in ["analyze", "分析", "調査", "review"]):
-        tags.append("task:analysis")
-    elif any(word in content_lower for word in ["test", "テスト", "検証"]):
-        tags.append("task:testing")
-    elif any(word in content_lower for word in ["design", "設計", "architecture"]):
-        tags.append("task:design")
+    for task_type, patterns in TASK_PATTERNS.items():
+        if any(word in content_lower for word in patterns):
+            tags.append(f"task:{task_type}")
+            break
 
     # 優先度検出
-    if any(word in content_lower for word in ["urgent", "critical", "important", "緊急", "重要"]):
-        tags.append("priority:high")
-    elif any(word in content_lower for word in ["later", "後で", "低優先"]):
-        tags.append("priority:low")
-    else:
+    priority_found = False
+    for priority, patterns in PRIORITY_PATTERNS.items():
+        if patterns and any(word in content_lower for word in patterns):
+            tags.append(f"priority:{priority}")
+            priority_found = True
+            break
+    if not priority_found:
         tags.append("priority:medium")
 
     # 状況タグ
@@ -202,7 +170,7 @@ def count_messages(conversation_content: str) -> int:
 def save_to_cipher(conversation_content: str, session_id: str, transcript_path: str) -> bool:
     """Cipherに会話内容を構造化して保存（MCP経由）"""
     try:
-        timestamp = datetime.now().isoformat()
+        timestamp = get_current_timestamp()
         project_context = extract_project_context(transcript_path)
 
         # 構造化されたメモリ内容
@@ -217,7 +185,7 @@ Claude Code Auto-Compact Memory Archive
 - Working Directory: {project_context.get('path', 'unknown')}
 
 # Summary Request
-以下のauto-compact直前の会話内容から、次のセッションで継続作業するために必要な情報を抽出・要約して記憶してください。
+以下のauto-compact直前の会話内容から、次のセッションで継続作業するために必要な情報を抽出・要約して `ask_cipher` を使って記憶してください。
 
 {conversation_content}
 
@@ -266,16 +234,43 @@ Claude Code Auto-Compact Memory Archive
         logger.info(f"Languages detected: {detect_languages(conversation_content)}")
         logger.info(f"Smart tags: {smart_tags}")
 
-        # TODO: 実際のMCP通信実装
-        # cipher_client = MCPClient()
-        # result = cipher_client.extract_and_operate_memory(
-        #     interaction=memory_content,
-        #     memoryMetadata=metadata
-        # )
+        # Claude CLI経由でCipherに実際に通信
+        logger.info("🔄 Attempting Cipher communication via Claude CLI...")
 
-        # 現在はシミュレーション
-        logger.info("Enhanced Cipher memory save simulated successfully")
-        return True
+        try:
+            # Claude CLI実行
+            result = subprocess.run(
+                CIPHER_CONFIG['claude_cli_command'],
+                input=memory_content,
+                capture_output=True,
+                text=True,
+                timeout=CIPHER_CONFIG['timeout_seconds']
+            )
+
+            if result.returncode == 0:
+                logger.info("✅ Successfully saved to Cipher via Claude CLI")
+                logger.info(f"🏷️ Smart tags applied: {smart_tags}")
+                logger.info(f"📝 Memory saved: {len(memory_content)} characters")
+
+                # レスポンスの一部をログに記録（デバッグ用）
+                response_preview = truncate_for_log(result.stdout, MESSAGE_CONFIG['max_response_length'])
+                logger.info(f"🔍 Cipher response: {response_preview}")
+
+                return True
+            else:
+                logger.error(f"Claude CLI failed with return code {result.returncode}")
+                logger.error(f"stderr: {result.stderr}")
+                return False
+
+        except subprocess.TimeoutExpired:
+            logger.error(f"Claude CLI timed out after {CIPHER_CONFIG['timeout_seconds']} seconds")
+            return False
+        except FileNotFoundError:
+            logger.error("Claude CLI not found in PATH")
+            return False
+        except Exception as e:
+            logger.error(f"Claude CLI communication failed: {e}")
+            return False
 
     except Exception as e:
         logger.error(f"Error saving enhanced memory to Cipher: {e}")
