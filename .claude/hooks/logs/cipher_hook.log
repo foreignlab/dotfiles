@@ -1,0 +1,85 @@
+[2025-09-23 14:49:09] PreCompact hook started
+[2025-09-23 14:49:09] Input JSON received: {
+  "session_id": "test_session_1758606549",
+  "transcript_path": "/tmp/test_transcript_30559.jsonl",
+  "hook_event_name": "PreCompact",
+  "trigger": "auto",
+  "custom_instructions": ""
+}
+[2025-09-23 14:49:09,709] INFO: Cipher memory save script started
+[2025-09-23 14:49:09,710] INFO: Processing auto-compact for session: test_session_1758606549
+[2025-09-23 14:49:09,710] INFO: Read 5 messages from transcript
+[2025-09-23 14:49:09,710] INFO: Would save to Cipher: 190 characters
+[2025-09-23 14:49:09,710] INFO: Session ID: test_session_1758606549
+[2025-09-23 14:49:09,710] INFO: Cipher memory save simulated successfully
+[2025-09-23 14:49:09,710] INFO: Successfully saved conversation to Cipher
+[2025-09-23 14:49:09] Python script executed successfully
+[2025-09-23 14:49:09] PreCompact hook started
+[2025-09-23 14:49:09] Input JSON received: {
+  "session_id": "test_session_1758606549",
+  "transcript_path": "/tmp/test_transcript_30559.jsonl",
+  "hook_event_name": "PreCompact",
+  "trigger": "manual",
+  "custom_instructions": ""
+}
+[2025-09-23 14:49:09,871] INFO: Cipher memory save script started
+[2025-09-23 14:49:09,871] INFO: Skipping processing for trigger: manual
+[2025-09-23 14:49:09] Python script executed successfully
+[2025-09-23 15:14:32] PreCompact hook started
+[2025-09-23 15:14:32] Input JSON received: {
+  "session_id": "test_session_1758608072",
+  "transcript_path": "/tmp/test_transcript_34699.jsonl",
+  "hook_event_name": "PreCompact",
+  "trigger": "auto",
+  "custom_instructions": ""
+}
+[2025-09-23 15:14:32,810] INFO: Cipher memory save script started
+[2025-09-23 15:14:32,810] INFO: Processing auto-compact for session: test_session_1758608072
+[2025-09-23 15:14:32,810] INFO: Read 5 messages from transcript
+[2025-09-23 15:14:32,811] INFO: Enhanced memory content prepared: 930 characters
+[2025-09-23 15:14:32,811] INFO: Project: unknown
+[2025-09-23 15:14:32,811] INFO: Languages detected: ['general']
+[2025-09-23 15:14:32,811] INFO: Smart tags: ['auto-compact', 'lang:general', 'task:implementation', 'priority:medium', 'status:active']
+[2025-09-23 15:14:32,811] INFO: Enhanced Cipher memory save simulated successfully
+[2025-09-23 15:14:32,811] INFO: Successfully saved conversation to Cipher
+[2025-09-23 15:14:32] Python script executed successfully
+[2025-09-23 15:14:32] PreCompact hook started
+[2025-09-23 15:14:32] Input JSON received: {
+  "session_id": "test_session_1758608072",
+  "transcript_path": "/tmp/test_transcript_34699.jsonl",
+  "hook_event_name": "PreCompact",
+  "trigger": "manual",
+  "custom_instructions": ""
+}
+[2025-09-23 15:14:32,985] INFO: Cipher memory save script started
+[2025-09-23 15:14:32,985] INFO: Skipping processing for trigger: manual
+[2025-09-23 15:14:32] Python script executed successfully
+[2025-09-23 15:15:07] PreCompact hook started
+[2025-09-23 15:15:07] Input JSON received: {
+  "session_id": "test_session_1758608107",
+  "transcript_path": "/tmp/test_transcript_34886.jsonl",
+  "hook_event_name": "PreCompact",
+  "trigger": "auto",
+  "custom_instructions": ""
+}
+[2025-09-23 15:15:07,824] INFO: Cipher memory save script started
+[2025-09-23 15:15:07,824] INFO: Processing auto-compact for session: test_session_1758608107
+[2025-09-23 15:15:07,825] INFO: Read 7 messages from transcript
+[2025-09-23 15:15:07,825] INFO: Enhanced memory content prepared: 1110 characters
+[2025-09-23 15:15:07,825] INFO: Project: unknown
+[2025-09-23 15:15:07,825] INFO: Languages detected: ['python']
+[2025-09-23 15:15:07,825] INFO: Smart tags: ['auto-compact', 'lang:python', 'task:implementation', 'priority:high', 'status:in-progress']
+[2025-09-23 15:15:07,825] INFO: Enhanced Cipher memory save simulated successfully
+[2025-09-23 15:15:07,825] INFO: Successfully saved conversation to Cipher
+[2025-09-23 15:15:07] Python script executed successfully
+[2025-09-23 15:15:07] PreCompact hook started
+[2025-09-23 15:15:07] Input JSON received: {
+  "session_id": "test_session_1758608107",
+  "transcript_path": "/tmp/test_transcript_34886.jsonl",
+  "hook_event_name": "PreCompact",
+  "trigger": "manual",
+  "custom_instructions": ""
+}
+[2025-09-23 15:15:07,987] INFO: Cipher memory save script started
+[2025-09-23 15:15:07,987] INFO: Skipping processing for trigger: manual
+[2025-09-23 15:15:07] Python script executed successfully

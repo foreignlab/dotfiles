@@ -1,0 +1,16 @@
+{
+  "model": "opusplan",
+  "hooks": {
+    "PreCompact": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/save_to_cipher.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
