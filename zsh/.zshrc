@@ -84,6 +84,7 @@ alias cat='bat --style=plain'
 alias diff='delta'
 alias vim='nvim'
 alias vi='nvim'
+alias view='nvim -R'
 
 ###
 ### PATH
@@ -171,3 +172,58 @@ function ff() {
   esac
 }
 
+function check_claude() {
+  local current_version
+  local latest_version
+
+  echo "🔍 Checking for Claude Code updates..."
+
+  if ! command -v claude &> /dev/null; then
+    echo "❌ Claude Code is not installed. Please install it first."
+    echo "💡 `npm install -g @anthropic-ai/claude-code`"
+    return 1
+  fi
+
+  current_version=$(claude --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+  if [ -z "$current_version" ]; then
+    echo "❌ Could not determine current version. Please check if Claude Code is installed correctly."
+    return 1
+  fi
+  echo "📦 Current version: $current_version"
+
+  latest_version=$(npm view @anthropic-ai/claude-code version 2>/dev/null | tr -d '\n')
+  if [ -z "$latest_version" ]; then
+    echo "❌ Could not fetch latest version from npm."
+    return 1
+  fi
+  echo "🆕 Latest version: $latest_version"
+
+  if [[ "$current_version" == "$latest_version" ]]; then
+    echo "✅ Claude Code is up to date."
+    return 0
+  fi
+
+  echo "🔄 New version available: $current_version -> $latest_version"
+  echo "🔄 Updating Claude Code..."
+
+  if npm update -g @anthropic-ai/claude-code; then
+    local new_version
+    new_version=$(claude --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+    echo "✅ Successfully updated to version: $new_version"
+    return 0
+  else
+    echo "❌ Failed to update Claude Code."
+    echo "💡 `npm update -g @anthropic-ai/claude-code`"
+    return 1
+  fi
+}
+
+### For ForeignLab.AI Settings
+export MINIO_ACCESS_KEY=minioadmin
+export MINIO_SECRET_KEY=foreignlab123
+export SPARK_JARS_HOME="$HOME/spark-jars"
+export SPARK_S3A_JARS="$SPARK_JARS_HOME/hadoop-aws-3.3.4.jar,$SPARK_JARS_HOME/aws-java-sdk-bundle-1.12.262.jar"
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/foreignlab/.lmstudio/bin"
+# End of LM Studio CLI section
