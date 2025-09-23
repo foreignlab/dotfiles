@@ -1,0 +1,20 @@
+# Testing files
+*test*.json
+*test*.jsonl
+test_*.sh
+
+# Log files and runtime data
+logs/
+*.log
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Temporary files
+*.tmp
+*.temp
+
+# Local testing transcripts
+real_test_*

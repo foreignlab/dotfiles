@@ -1,0 +1,27 @@
+{
+  "model": "opusplan",
+  "hooks": {
+    "PreCompact": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/save_to_cipher.sh"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/restore_from_cipher.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
