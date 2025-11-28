@@ -1,3 +1,10 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 ###
 ### 基本設定
 ###
@@ -227,3 +234,9 @@ export SPARK_S3A_JARS="$SPARK_JARS_HOME/hadoop-aws-3.3.4.jar,$SPARK_JARS_HOME/aw
 # Added by LM Studio CLI (lms)
 export PATH="$PATH:/Users/foreignlab/.lmstudio/bin"
 # End of LM Studio CLI section
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /opt/homebrew/bin/mc mc
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+#fastfetch
