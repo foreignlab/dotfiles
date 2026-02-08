@@ -1,0 +1,31 @@
+{
+	"fontFamily": "MesloLGS Nerd Font Mono",
+	"fontSize": 16,
+	"fontWeight": "normal",
+	"fontWeightBold": "bold",
+	"letterSpacing": 1,
+	"lineHeight": 1,
+	"theme": {
+		"background": "#1e1f28",
+		"black": "#000000",
+		"blue": "#bd93f9",
+		"brightBlack": "#555555",
+		"brightBlue": "#bd93f9",
+		"brightCyan": "#8be9fd",
+		"brightGreen": "#50fa7b",
+		"brightMagenta": "#ff79c6",
+		"brightRed": "#ff5555",
+		"brightWhite": "#ffffff",
+		"brightYellow": "#f1fa8c",
+		"cursor": "#bbbbbb",
+		"cursorAccent": "#ffffff",
+		"cyan": "#8be9fd",
+		"foreground": "#e5e5e5",
+		"green": "#50fa7b",
+		"magenta": "#ff79c6",
+		"red": "#ff5555",
+		"white": "#bbbbbb",
+		"yellow": "#f1fa8c"
+	},
+	"documentOverride": null
+}
