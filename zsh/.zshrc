@@ -1,10 +1,3 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 ###
 ### 基本設定
 ###
@@ -75,8 +68,18 @@ export FZF_TMUX_OPTS="-p 80%,60%"
 
 ###
 ### Powerlevel10k の読み込み
+###  Obsidian 内蔵ターミナル（$OBSIDIAN_TERMINAL）では競合するため無効化する
 ###
-[[ -r "${HOME}/.p10k.zsh" ]] && source "${HOME}/.p10k.zsh"
+if [[ -z "$OBSIDIAN_TERMINAL" ]]; then
+  # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+  # Initialization code that may require console input (password prompts, [y/n]
+  # confirmations, etc.) must go above this block; everything else may go below.
+  if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+  fi
+
+  [[ -r "${HOME}/.p10k.zsh" ]] && source "${HOME}/.p10k.zsh"
+fi
 
 ###
 ### エイリアス
@@ -87,37 +90,63 @@ alias lt='eza -l --octal-permissions --sort newest -r'
 alias ltr='eza -l --octal-permissions --sort newest'
 alias lat='eza -la --octal-permissions --sort newest -r'
 alias latr='eza -la --octal-permissions --sort newest'
-alias bat='batcat'
+# Debian/Ubuntu(WSL) では bat が batcat という名前で入るため、その場合だけ別名を張る
+if command -v batcat >/dev/null 2>&1; then
+  alias bat='batcat'
+fi
 alias cat='bat --style=plain'
 alias diff='delta'
 alias vim='nvim'
 alias vi='nvim'
 alias view='nvim -R'
+alias ocd='cd $HOME/Documents/Obsidian/Notes'
+alias cc='claude'
+alias ccw='CLAUDE_CONFIG_DIR=$HOME/.claude-work claude'
+# alias ccw='CLAUDE_CONFIG_DIR=$HOME/.claude-work \
+#     CLAUDE_CODE_USE_VERTEX=1 \
+#     CLOUD_ML_REGION=us-east5 \
+#     ANTHROPIC_VERTEX_PROJECT_ID=prod-mcc-ai-sonoda-dais \
+#     ANTHROPIC_MODEL="claude-sonnet-4-5@20250929" \
+#     ANTHROPIC_SMALL_FAST_MODEL="claude-haiku-4-5@20251001" \
+#     claude --verbose'
+alias gh-p='gh auth switch --user foreignlab >/dev/null 2>&1 && gh'
+alias gh-w='gh auth switch --user sonoda-daisuke >/dev/null 2>&1 && gh'
 
 ###
 ### PATH
 ###
-#-- 0. ~/.local/bin
+#-- ~/.local/bin
 export PATH="$HOME/.local/bin:$PATH"
 
-#-- 1. Volta（Node.js のバージョン管理）
-#export VOLTA_HOME="$HOME/.volta"
-#export PATH="$VOLTA_HOME/bin:$PATH"
+#-- Node.js などのバージョン管理
+#   mise があればそれを使い（主に macOS）、無ければ nvm にフォールバック（主に WSL）。
+#   両方入っていても mise 優先で衝突しない。
+if command -v mise >/dev/null 2>&1; then
+  eval "$(mise activate zsh)"
+elif [ -s "$HOME/.nvm/nvm.sh" ]; then
+  export NVM_DIR="$HOME/.nvm"
+  source "$NVM_DIR/nvm.sh"
+  [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
+fi
 
-#-- 2. pyenv（Python のバージョン管理）
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init - zsh)"
+# #-- pyenv（Python のバージョン管理）
+# export PYENV_ROOT="$HOME/.pyenv"
+# [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+# eval "$(pyenv init - zsh)"
 
-#-- 3. direnv
+#-- direnv
 eval "$(direnv hook zsh)"
 
-#-- 4. jenv（Java バージョン管理）
-#export JENV_ROOT="$HOME/.jenv"
-#export PATH="$JENV_ROOT/bin:$PATH"
-#eval "$(jenv init -)"
+# #-- jenv（Java バージョン管理）
+# export JENV_ROOT="$HOME/.jenv"
+# export PATH="$JENV_ROOT/bin:$PATH"
+# eval "$(jenv init -)"
 
-#export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+# export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+
+#-- Go
+export GOPATH="$HOME/go"
+export PATH="$GOPATH/bin:$PATH"
 
 ###
 ### 自作関数
@@ -180,51 +209,51 @@ function ff() {
   esac
 }
 
-function check_claude() {
-  local current_version
-  local latest_version
+# function check_claude() {
+#   local current_version
+#   local latest_version
 
-  echo "🔍 Checking for Claude Code updates..."
+#   echo "🔍 Checking for Claude Code updates..."
 
-  if ! command -v claude &> /dev/null; then
-    echo "❌ Claude Code is not installed. Please install it first."
-    echo "💡 `npm install -g @anthropic-ai/claude-code`"
-    return 1
-  fi
+#   if ! command -v claude &> /dev/null; then
+#     echo "❌ Claude Code is not installed. Please install it first."
+#     echo "💡 `npm install -g @anthropic-ai/claude-code`"
+#     return 1
+#   fi
 
-  current_version=$(claude --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-  if [ -z "$current_version" ]; then
-    echo "❌ Could not determine current version. Please check if Claude Code is installed correctly."
-    return 1
-  fi
-  echo "📦 Current version: $current_version"
+#   current_version=$(claude --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+#   if [ -z "$current_version" ]; then
+#     echo "❌ Could not determine current version. Please check if Claude Code is installed correctly."
+#     return 1
+#   fi
+#   echo "📦 Current version: $current_version"
 
-  latest_version=$(npm view @anthropic-ai/claude-code version 2>/dev/null | tr -d '\n')
-  if [ -z "$latest_version" ]; then
-    echo "❌ Could not fetch latest version from npm."
-    return 1
-  fi
-  echo "🆕 Latest version: $latest_version"
+#   latest_version=$(npm view @anthropic-ai/claude-code version 2>/dev/null | tr -d '\n')
+#   if [ -z "$latest_version" ]; then
+#     echo "❌ Could not fetch latest version from npm."
+#     return 1
+#   fi
+#   echo "🆕 Latest version: $latest_version"
 
-  if [[ "$current_version" == "$latest_version" ]]; then
-    echo "✅ Claude Code is up to date."
-    return 0
-  fi
+#   if [[ "$current_version" == "$latest_version" ]]; then
+#     echo "✅ Claude Code is up to date."
+#     return 0
+#   fi
 
-  echo "🔄 New version available: $current_version -> $latest_version"
-  echo "🔄 Updating Claude Code..."
+#   echo "🔄 New version available: $current_version -> $latest_version"
+#   echo "🔄 Updating Claude Code..."
 
-  if npm update -g @anthropic-ai/claude-code; then
-    local new_version
-    new_version=$(claude --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-    echo "✅ Successfully updated to version: $new_version"
-    return 0
-  else
-    echo "❌ Failed to update Claude Code."
-    echo "💡 `npm update -g @anthropic-ai/claude-code`"
-    return 1
-  fi
-}
+#   if npm update -g @anthropic-ai/claude-code; then
+#     local new_version
+#     new_version=$(claude --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+#     echo "✅ Successfully updated to version: $new_version"
+#     return 0
+#   else
+#     echo "❌ Failed to update Claude Code."
+#     echo "💡 `npm update -g @anthropic-ai/claude-code`"
+#     return 1
+#   fi
+# }
 
 ### For ForeignLab.AI Settings
 export MINIO_ACCESS_KEY=minioadmin
@@ -232,27 +261,37 @@ export MINIO_SECRET_KEY=foreignlab123
 export SPARK_JARS_HOME="$HOME/spark-jars"
 export SPARK_S3A_JARS="$SPARK_JARS_HOME/hadoop-aws-3.3.4.jar,$SPARK_JARS_HOME/aws-java-sdk-bundle-1.12.262.jar"
 
+### For Gemini CLI
+export GOOGLE_GENAI_USE_GCA=true
+
 # Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/foreignlab/.lmstudio/bin"
+export PATH="$PATH:$HOME/.lmstudio/bin"
 # End of LM Studio CLI section
 autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /opt/homebrew/bin/mc mc
+# mc (MinIO Client) のシェル補完 — インストール済みのときのみ
+if command -v mc >/dev/null 2>&1; then
+  complete -o nospace -C "$(command -v mc)" mc
+fi
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-#fastfetch
+# # Added by Antigravity
+# export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-#export PATH="$HOME/.local/bin:$PATH"
-
-export GOPATH="$HOME/go"
-export PATH="$GOPATH/bin:$PATH"
-
-# bun completions
-[ -s "/home/foreignlab/.bun/_bun" ] && source "/home/foreignlab/.bun/_bun"
+# bun completions（$HOME 展開で Mac(/Users) と WSL(/home) 両対応）
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+alias claude-mem='bun "$HOME/.claude/plugins/marketplaces/thedotmack/plugin/scripts/worker-service.cjs"'
+
+# Google Cloud SDK（存在する場合のみ読み込む。$HOME 展開で Mac/WSL 両対応）
+if [ -f "$HOME/Downloads/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/Downloads/google-cloud-sdk/path.zsh.inc"; fi
+
+# gcloud のシェルコマンド補完
+if [ -f "$HOME/Downloads/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/Downloads/google-cloud-sdk/completion.zsh.inc"; fi
+
+#if [ -z "$TMUX" ] && [ -n "$PS1" ]; then
+#  tmux attach || tmux
+#fi
+fastfetch

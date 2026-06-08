@@ -51,6 +51,7 @@ end
 
 -- OS クリップボードをデフォルトレジスタと連携
 vim.opt.clipboard = 'unnamedplus'
+vim.opt.mouse = 'a'
 
 require('config.lazy')
 

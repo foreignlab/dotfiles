@@ -78,7 +78,7 @@ exec zsh
 
 ```bash
 # 必須ツール
-brew install zsh tmux git fzf fd bat eza delta
+brew install zsh tmux git fzf fd bat eza delta fastfetch
 
 # 開発ツール（オプション）
 brew install volta pyenv jenv direnv ghq gh

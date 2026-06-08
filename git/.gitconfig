@@ -17,3 +17,20 @@
 [credential "https://gist.github.com"]
 	helper =
 	helper = !gh auth git-credential
+
+[url "git@github-work:aeonnext/"]
+  insteadOf = https://github.com/aeonnext/
+
+[ghq]
+  root = ~/ghq
+
+[ghq "https://github.com/aeonnext/"]
+  root = ~/ghq-work
+
+[url "https://github.com/"]
+  insteadOf = git@github.com:
+  insteadOf = ssh://git@github.com/
+
+# aeonnext 配下のリポでは仕事用 identity（user.name/email）を自動適用
+[includeIf "gitdir:~/Documents/ghq-work/github.com/aeonnext/"]
+  path = ~/.gitconfig-aeonnext
