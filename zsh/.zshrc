@@ -87,6 +87,7 @@ alias lt='eza -l --octal-permissions --sort newest -r'
 alias ltr='eza -l --octal-permissions --sort newest'
 alias lat='eza -la --octal-permissions --sort newest -r'
 alias latr='eza -la --octal-permissions --sort newest'
+alias bat='batcat'
 alias cat='bat --style=plain'
 alias diff='delta'
 alias vim='nvim'
@@ -100,8 +101,8 @@ alias view='nvim -R'
 export PATH="$HOME/.local/bin:$PATH"
 
 #-- 1. Volta（Node.js のバージョン管理）
-export VOLTA_HOME="$HOME/.volta"
-export PATH="$VOLTA_HOME/bin:$PATH"
+#export VOLTA_HOME="$HOME/.volta"
+#export PATH="$VOLTA_HOME/bin:$PATH"
 
 #-- 2. pyenv（Python のバージョン管理）
 export PYENV_ROOT="$HOME/.pyenv"
@@ -112,11 +113,11 @@ eval "$(pyenv init - zsh)"
 eval "$(direnv hook zsh)"
 
 #-- 4. jenv（Java バージョン管理）
-export JENV_ROOT="$HOME/.jenv"
-export PATH="$JENV_ROOT/bin:$PATH"
-eval "$(jenv init -)"
+#export JENV_ROOT="$HOME/.jenv"
+#export PATH="$JENV_ROOT/bin:$PATH"
+#eval "$(jenv init -)"
 
-export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+#export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
 
 ###
 ### 自作関数
@@ -240,3 +241,18 @@ complete -o nospace -C /opt/homebrew/bin/mc mc
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 #fastfetch
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+#export PATH="$HOME/.local/bin:$PATH"
+
+export GOPATH="$HOME/go"
+export PATH="$GOPATH/bin:$PATH"
+
+# bun completions
+[ -s "/home/foreignlab/.bun/_bun" ] && source "/home/foreignlab/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"

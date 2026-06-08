@@ -15,11 +15,16 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   { 'folke/lazy.nvim', version = false },
   { 'dracula/vim', name = 'dracula' },
+
+  {
+    'nvim-treesitter/nvim-treesitter',
+    build = ':TSUpdate',
+  },
+
   {
     'MeanderingProgrammer/render-markdown.nvim',
     dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' },
     opts = {
-      -- render_modes = { 'n', 'c', 'v' },
       render_modes = true,
       anti_conceal = { enabled = true },
       heading = {
