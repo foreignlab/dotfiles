@@ -22,3 +22,6 @@ __pycache__/
 
 # Local testing transcripts
 real_test_*
+
+# Claude Code local settings
+.claude/
