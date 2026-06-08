@@ -16,5 +16,9 @@ __pycache__/
 *.tmp
 *.temp
 
+# Backup files
+*.orig
+*.bak
+
 # Local testing transcripts
 real_test_*
