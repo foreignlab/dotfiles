@@ -1,2 +1,6 @@
 *~
 .DS_Store
+
+# direnv（トークン直書き事故防止。~/Documents/Obsidian/Notes/000_Inbox のghマルチアカウントメモ参照）
+.envrc
+**/.claude/settings.local.json
