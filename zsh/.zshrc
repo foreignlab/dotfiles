@@ -291,7 +291,10 @@ if [ -f "$HOME/Downloads/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/Downloa
 # gcloud のシェルコマンド補完
 if [ -f "$HOME/Downloads/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/Downloads/google-cloud-sdk/completion.zsh.inc"; fi
 
-#if [ -z "$TMUX" ] && [ -n "$PS1" ]; then
-#  tmux attach || tmux
-#fi
+# tmux 外の対話シェルなら、起動時に fzf セッションピッカーを表示（Mac/WSL 共通）
+# exec せず「呼ぶ」だけ。Esc を押すとピッカーが終了してこの素のシェルへ戻る。
+if [[ -o interactive && -z "$TMUX" ]] && command -v tmux-launch >/dev/null 2>&1; then
+  tmux-launch
+fi
+
 fastfetch

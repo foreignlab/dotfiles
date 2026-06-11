@@ -44,6 +44,10 @@ ln -sf "$DOTFILES_DIR/tmux/.tmux.conf" "$HOME/.tmux.conf"
 mkdir -p "$HOME/.config"
 ln -snf "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
 
+# fzf-driven tmux session picker (run by the terminal at startup)
+mkdir -p "$HOME/.local/bin"
+ln -sf "$DOTFILES_DIR/tmux/tmux-launch.sh" "$HOME/.local/bin/tmux-launch"
+
 # Install tmux plugins non-interactively (TPM must be present)
 if [ -x "$HOME/.tmux/plugins/tpm/bin/install_plugins" ]; then
   echo "Installing tmux plugins..."
