@@ -40,6 +40,10 @@ ln -sf "$DOTFILES_DIR/git/.gitignore_global" "$HOME/.gitignore_global"
 # Tmux configuration
 ln -sf "$DOTFILES_DIR/tmux/.tmux.conf" "$HOME/.tmux.conf"
 
+# Neovim configuration (link the whole directory; lazy.nvim bootstraps itself on first launch)
+mkdir -p "$HOME/.config"
+ln -snf "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
+
 # Install tmux plugins non-interactively (TPM must be present)
 if [ -x "$HOME/.tmux/plugins/tpm/bin/install_plugins" ]; then
   echo "Installing tmux plugins..."
