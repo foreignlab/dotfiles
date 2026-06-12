@@ -7,6 +7,16 @@ export TERM="xterm-256color"
 #export EDITOR=vim
 
 ###
+### tmux セッションピッカー
+###  fzf がコンソール入出力を使うため、p10k instant prompt ブロックより上に置くこと
+###  （下に置くと instant prompt に出力が吸われて UI が表示されない）。
+###  ~/.local/bin の PATH 追加より前に走るのでフルパスで呼ぶ。
+###
+if [[ -o interactive && -z "$TMUX" ]] && [ -x "$HOME/.local/bin/tmux-launch" ]; then
+  "$HOME/.local/bin/tmux-launch"
+fi
+
+###
 ### ヒストリー・履歴設定
 ###
 HISTFILE="$HOME/.zsh_history"
@@ -176,7 +186,7 @@ function gcd() {
   cd "$(ghq root)/$repo" || return
 
   if [[ -n "$TMUX" ]]; then
-    tmux rename-session -t "$(basename "$repo")"
+    tmux rename-session "$(basename "$repo")"
   fi
 }
 
@@ -290,11 +300,5 @@ if [ -f "$HOME/Downloads/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/Downloa
 
 # gcloud のシェルコマンド補完
 if [ -f "$HOME/Downloads/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/Downloads/google-cloud-sdk/completion.zsh.inc"; fi
-
-# tmux 外の対話シェルなら、起動時に fzf セッションピッカーを表示（Mac/WSL 共通）
-# exec せず「呼ぶ」だけ。Esc を押すとピッカーが終了してこの素のシェルへ戻る。
-if [[ -o interactive && -z "$TMUX" ]] && command -v tmux-launch >/dev/null 2>&1; then
-  tmux-launch
-fi
 
 fastfetch
