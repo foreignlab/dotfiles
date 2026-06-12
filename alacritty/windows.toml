@@ -1,0 +1,35 @@
+# Alacritty 設定 — Windows 用 entry（WSL に wsl.exe で入る構成）
+# WSL 内で install.sh を実行すると、このファイルが alacritty.toml という名前で
+# %APPDATA%\alacritty\ にコピーされる（Windows アプリは WSL 内のシンボリックリンクを
+# 読めないため、リンクではなくコピーで配布する。設定変更後は install.sh を再実行）。
+
+[general]
+import = ["common.toml", "themes/dracula.toml"]
+
+# wsl.exe 経由で WSL のデフォルトディストリビューションに入り、ホームディレクトリで開始。
+# ログインシェル（zsh）が対話起動するので .zshrc の tmux-launch ピッカーがここでも動く。
+[terminal.shell]
+program = "wsl.exe"
+args = ["~"]
+
+# 注意: Windows 側のフォントファミリー名は Mac と表記が異なる場合がある。
+# 文字化けする場合は Windows の「フォント設定」で正確な名前を確認して直すこと。
+[font]
+size = 16.0
+builtin_box_drawing = true
+
+[font.normal]
+family = "MesloLGS NF"
+style  = "Regular"
+
+[font.bold]
+family = "MesloLGS NF"
+style  = "Bold"
+
+[font.italic]
+family = "MesloLGS NF"
+style  = "Italic"
+
+[font.bold_italic]
+family = "MesloLGS NF"
+style  = "Bold Italic"

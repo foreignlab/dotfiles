@@ -1,0 +1,17 @@
+# Alacritty 共通設定（Mac / Windows 両方の entry ファイルから import される）
+# OS 固有の設定（フォント・シェル起動）は alacritty.toml / windows.toml 側に置く
+
+[env]
+TERM = "xterm-256color"
+
+[window]
+startup_mode = "Windowed"
+decorations = "Full"
+padding.x = 8
+padding.y = 8
+opacity = 0.8
+
+[[keyboard.bindings]]
+key = "Return"
+mods = "Shift"
+chars = "\n"
