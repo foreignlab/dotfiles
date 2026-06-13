@@ -1,11 +1,11 @@
 # Alacritty 共通設定（Mac / Windows 両方の entry ファイルから import される）
-# OS 固有の設定（フォント・シェル起動）は alacritty.toml / windows.toml 側に置く
+# OS 固有の設定（フォント・シェル起動・startup_mode）は alacritty.toml / windows.toml 側に置く
 
 [env]
 TERM = "xterm-256color"
 
 [window]
-startup_mode = "Windowed"
+# startup_mode は OS ごとに使い分けたいため各 entry ファイル側で指定する
 decorations = "Full"
 padding.x = 8
 padding.y = 8

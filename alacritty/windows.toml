@@ -6,30 +6,34 @@
 [general]
 import = ["common.toml", "themes/dracula.toml"]
 
-# wsl.exe 経由で WSL のデフォルトディストリビューションに入り、ホームディレクトリで開始。
+# wsl.exe 経由で Ubuntu ディストリビューションに入り、ホームディレクトリで開始。
 # ログインシェル（zsh）が対話起動するので .zshrc の tmux-launch ピッカーがここでも動く。
 [terminal.shell]
 program = "wsl.exe"
-args = ["~"]
+args = ["-d", "Ubuntu", "--cd", "~"]
+
+# startup_mode は OS 別に使い分け（共通設定は common.toml）
+[window]
+startup_mode = "Maximized"
 
 # 注意: Windows 側のフォントファミリー名は Mac と表記が異なる場合がある。
 # 文字化けする場合は Windows の「フォント設定」で正確な名前を確認して直すこと。
 [font]
-size = 16.0
+size = 13.0
 builtin_box_drawing = true
 
 [font.normal]
-family = "MesloLGS NF"
+family = "MesloLGS Nerd Font"
 style  = "Regular"
 
 [font.bold]
-family = "MesloLGS NF"
+family = "MesloLGS Nerd Font"
 style  = "Bold"
 
 [font.italic]
-family = "MesloLGS NF"
+family = "MesloLGS Nerd Font"
 style  = "Italic"
 
 [font.bold_italic]
-family = "MesloLGS NF"
+family = "MesloLGS Nerd Font"
 style  = "Bold Italic"

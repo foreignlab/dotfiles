@@ -8,6 +8,10 @@ import = ["common.toml", "themes/dracula.toml"]
 # tmux への接続は .zshrc の tmux-launch（fzf セッションピッカー）が行うため、
 # [terminal.shell] は設定しない（-c は非対話シェルになり .zshrc が読まれない）
 
+# startup_mode は OS 別に使い分け（共通設定は common.toml）
+[window]
+startup_mode = "Windowed"
+
 [font]
 size = 16.0
 builtin_box_drawing = true
